@@ -18,17 +18,22 @@ pipeline {
         }
 
         stage('SonarQube Scan') {
-            environment {
-                SONAR_TOKEN = credentials('sonar-token')
-            }
-            steps {
-                sh '''
-                mvn sonar:sonar \
-                -Dsonar.host.url=http://sonarqube:9000 \
-                -Dsonar.login=$SONAR_TOKEN
-                '''
-            }
+    environment {
+        SONAR_TOKEN = credentials('sonar-token')
+    }
+    steps {
+        withSonarQubeEnv('sonar') {
+            sh '''
+            sonar-scanner \
+            -Dsonar.projectKey=boardgame-app \
+            -Dsonar.sources=src \
+            -Dsonar.java.binaries=target \
+            -Dsonar.login=$SONAR_TOKEN
+            '''
         }
+    }
+}
+
 
         stage('Docker Build') {
             steps {
