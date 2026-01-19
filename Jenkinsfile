@@ -6,16 +6,10 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = "techgryphdocker/boardgame-app"
+        IMAGE_NAME = "DOCKERHUB_USERNAME/boardgame-app"
     }
 
     stages {
-
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/DevOpsInstituteMumbai-wa/Automating-Secure-Deployment-Boardgame.git'
-            }
-        }
 
         stage('Build') {
             steps {
