@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = "DOCKERHUB_USERNAME/boardgame-app"
+        IMAGE_NAME = "techgryphdocker/boardgame-app"
     }
 
     stages {
