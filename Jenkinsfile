@@ -51,13 +51,13 @@ pipeline {
         stage('Deploy to App Servers') {
             steps {
                 sh '''
-                ssh ubuntu@APP1_PUBLIC_IP "
+                ssh ubuntu@3.109.60.11 "
                   docker pull $IMAGE_NAME:$BUILD_NUMBER &&
                   docker rm -f boardgame || true &&
                   docker run -d --name boardgame -p 8080:8080 $IMAGE_NAME:$BUILD_NUMBER
                 "
 
-                ssh ubuntu@APP2_PUBLIC_IP "
+                ssh ubuntu@13.201.38.247 "
                   docker pull $IMAGE_NAME:$BUILD_NUMBER &&
                   docker rm -f boardgame || true &&
                   docker run -d --name boardgame -p 8080:8080 $IMAGE_NAME:$BUILD_NUMBER
