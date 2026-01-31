@@ -50,19 +50,25 @@ pipeline {
 
         stage('Deploy to App Servers') {
             steps {
-                sh '''
-                ssh ubuntu@3.109.60.11 "
-                  docker pull $IMAGE_NAME:$BUILD_NUMBER &&
-                  docker rm -f boardgame || true &&
-                  docker run -d --name boardgame -p 8080:8080 $IMAGE_NAME:$BUILD_NUMBER
-                "
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: 'ec2-ssh-key',
+                    keyFileVariable: 'SSH_KEY',
+                    usernameVariable: 'SSH_USER'
+                )]) {
+                    sh '''
+                    ssh -i $SSH_KEY -o StrictHostKeyChecking=no $SSH_USER@3.109.60.11 "
+                      docker pull $IMAGE_NAME:$BUILD_NUMBER &&
+                      docker rm -f boardgame || true &&
+                      docker run -d --name boardgame -p 8080:8080 $IMAGE_NAME:$BUILD_NUMBER
+                    "
 
-                ssh ubuntu@13.201.38.247 "
-                  docker pull $IMAGE_NAME:$BUILD_NUMBER &&
-                  docker rm -f boardgame || true &&
-                  docker run -d --name boardgame -p 8080:8080 $IMAGE_NAME:$BUILD_NUMBER
-                "
-                '''
+                    ssh -i $SSH_KEY -o StrictHostKeyChecking=no $SSH_USER@13.201.38.247 "
+                      docker pull $IMAGE_NAME:$BUILD_NUMBER &&
+                      docker rm -f boardgame || true &&
+                      docker run -d --name boardgame -p 8080:8080 $IMAGE_NAME:$BUILD_NUMBER
+                    "
+                    '''
+                }
             }
         }
 
