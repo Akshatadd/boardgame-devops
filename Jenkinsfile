@@ -30,7 +30,6 @@ pipeline {
     }
 }
 
-
         stage('Docker Build') {
             steps {
                 sh 'docker build -t $IMAGE_NAME:$BUILD_NUMBER .'
@@ -48,6 +47,24 @@ pipeline {
                 '''
             }
         }
+
+        stage('Deploy to App Servers') {
+            steps {
+                sh '''
+                ssh ubuntu@APP1_PUBLIC_IP "
+                  docker pull $IMAGE_NAME:$BUILD_NUMBER &&
+                  docker rm -f boardgame || true &&
+                  docker run -d --name boardgame -p 8080:8080 $IMAGE_NAME:$BUILD_NUMBER
+                "
+
+                ssh ubuntu@APP2_PUBLIC_IP "
+                  docker pull $IMAGE_NAME:$BUILD_NUMBER &&
+                  docker rm -f boardgame || true &&
+                  docker run -d --name boardgame -p 8080:8080 $IMAGE_NAME:$BUILD_NUMBER
+                "
+                '''
+            }
+        }
+
     }
 }
-
